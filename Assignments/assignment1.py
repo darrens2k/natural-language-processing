@@ -3,10 +3,12 @@
 # MMAI 5400 Assignment 1
 # Darren Singh
 # 216236275
-
+import bs4
 from bs4 import BeautifulSoup as bSoup
 import requests
 import csv
+
+print(bs4.__version__)
 
 # Chosen company is Brita
 
