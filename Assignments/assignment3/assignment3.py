@@ -19,7 +19,7 @@ ner = spacy.load(ner_path)
 # run the ner model on the reviews
 # must iterate through each review
 # begin with only the first 5 reviews as a test
-for i in range(2):
+for i in range(len(reviews)):
 
     # empty list to store the dishes in the review
     dishes = []
@@ -44,51 +44,56 @@ for i in range(2):
 
     # sort dishes in descending order, reason inside loop comments
     dishes = sorted(dishes, key=len, reverse=True)
-    print(dishes)
-    # iterate through all dishes
+    
+    # list to store the indices of the different dishes
+    locs = []
+    
+    # go through dishes that appear in review
     for dish in dishes:
-
-        # need to make sure we are not within another 
-        # for example, the code could think 'taco' within 'lobster tacos' is another dish
-        # to stop this check if a start tag with no end tag exists
-        # longer dishes must come first for this to work
-
-        current_review = reviews[i]
-        rev = current_review
-        start_index = 0
-        print(dish)
-        while True:
+        
+        # start index of search
+        begin_index = 0
+        
+        # loop to locate all occurrences of dish in review
+        while begin_index < len(reviews[i]):
             
-            locate = current_review.find(dish, start_index)
-            # print(locate)
-            if locate == -1 or start_index >= len(reviews[i]) - 1:
-                print("broke")
+            # locate first instance of dish
+            start_index = reviews[i].find(dish, begin_index)
+            
+            # if dish not found in review
+            if start_index == -1:
+                
                 break
+            
+            # add length to get the end index
+            end_index = start_index + len(dish)
+            
+            # store the dish name, start index, end index
+            temp = [dish, start_index, end_index]
+            
+            # boolean to control if we record this dish
+            flag = False
+            
+            # before adding this to list of dishes, check if this dish exists within a dish already found
+            for d, start, end in locs:
+                
+                # check if our current dish starts within another dish
+                if start_index >= start and end_index <= end:
+                    
+                    flag = True
+            
+            if not flag:
+            
+                # append to locs
+                locs.append(temp)
+                
+                # update review
+                replacement = f"[B-ASP]{dish}[E-ASP]"
+                reviews[i] = reviews[i][:start_index] + replacement + reviews[i][end_index:]
 
             
-
-            # split the review into 2 list elements at the dish
-            first, second = rev.split(dish, 1)
+            # update search index
+            begin_index += end_index + len(replacement)
             
-            # check for the first tag to appear before the dish
-            # if it is an end tag, proceed, if it is start tag: we're in the middle of another dish
-            last_start_tag_loc = first.rfind("[B-ASP]")
-            last_end_tag_loc = first.rfind("[E-ASP]")
-
-            # check if a start tag is located before an end tag
-            if last_start_tag_loc > last_end_tag_loc:
-
-                # do not continue the loop, do not update the review here
-                continue
             
-
-            # add tags into the review
-            reviews[i] = reviews[i].replace(dish, f"[B-ASP]{dish}[E-ASP]")
-
-            start_index = locate + len(dish)
-            print(start_index)
-            rev = current_review[start_index:]
-
-
-print(reviews[0])
-
+print(reviews[29])
