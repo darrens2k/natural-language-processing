@@ -1,0 +1,3 @@
+# Assignment 1 Outline
+
+Assignment 1 involves web scraping reviews from Trustpilot, with the objective of later sentiment analysis. The task requires scraping reviews for a chosen company, ensuring it has a minimum of 500 reviews. Using Python 3 and the requests module, the script should download the HTML, extract the total number of reviews, iterate through review pages, and extract reviews, subsequently saving them to a CSV file with columns for company name, date published, rating value, and review body. The script should be PEP8 formatted, bug-free, and capable of running from the terminal or IPython/Jupyter.
